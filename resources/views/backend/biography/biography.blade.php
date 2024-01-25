@@ -45,7 +45,7 @@
                                 <td style="vertical-align: middle">{{ $biography->id }}</td>
                                 <td style="vertical-align: middle">{{ $biography->name }}</td>
                                 <td style="vertical-align: middle">
-                                    <img src="{{ asset('uploads/' . $biography->photo) }}" alt="Biography Photo"
+                                    <img src="{{ asset($biography->photo) }}" alt="Biography Photo"
                                          style="max-width: 100px; max-height: 100px;">
                                 </td>
                                 <td style="vertical-align: middle">{{ $biography->dr_text }}</td>
@@ -89,7 +89,7 @@
                         <div class="card-body">
                             <!-- Add an image element to display the biography photo -->
                             <div class="form-group text-center">
-                                <img id="biographyImage" src="" alt="Biography Photo"
+                                <img id="biography_photos" src="" alt="Biography Photo"
                                      style="max-width: 100%; max-height: 200px;">
                             </div>
                             <div class="form-group">
@@ -115,12 +115,12 @@
                                           placeholder="Enter English text"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="biographyFile">File input</label>
+                                <label for="biography_photos">File input</label>
                                 <div class="input-group">
                                     <div class="custom-file">
-                                        <input type="file" class="custom-file-input" id="biographyFile"
-                                               name="biographyFile">
-                                        <label class="custom-file-label" for="biographyFile">Choose file</label>
+                                        <input type="file" class="custom-file-input" id="biography_photos"
+                                               name="biography_photos">
+                                        <label class="custom-file-label" for="biography_photos">Choose file</label>
                                     </div>
                                     <div class="input-group-append">
                                         <span class="input-group-text">Upload</span>
@@ -148,13 +148,16 @@ function showBiographyDetails(biographyId) {
         success: function (biography) {
             // Populate the modal fields with biography details
             $("#biographyName").val(biography.name);
+            
             // Initialize TinyMCE for textareas
             tinymce.init({
                 selector: '#dr_text',
                 apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p',
                 setup: function (editor) {
                     editor.on('init', function () {
-                        editor.setContent(biography.dr_text);
+                        if (biography.dr_text) {
+                            editor.setContent(biography.dr_text);
+                        }
                     });
                 }
             });
@@ -164,7 +167,9 @@ function showBiographyDetails(biographyId) {
                 apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p',
                 setup: function (editor) {
                     editor.on('init', function () {
-                        editor.setContent(biography.ps_text);
+                        if (biography.ps_text) {
+                            editor.setContent(biography.ps_text);
+                        }
                     });
                 }
             });
@@ -174,13 +179,15 @@ function showBiographyDetails(biographyId) {
                 apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p',
                 setup: function (editor) {
                     editor.on('init', function () {
-                        editor.setContent(biography.en_text);
+                        if (biography.en_text) {
+                            editor.setContent(biography.en_text);
+                        }                    
                     });
                 }
             });
 
             // Set the image source dynamically
-            $("#biographyImage").attr("src", "{{ asset('uploads/') }}/" + biography.photo);
+            $("#biography_photos").attr("src", "{{ asset('uploads/') }}/" + biography.photo);
 
             // Display the modal
             $("#biographyDetailsModal").modal("show");
@@ -190,51 +197,34 @@ function showBiographyDetails(biographyId) {
         }
     });
 }
-
-
 </script>
-
 <script>
-    $(document).ready(function () {
-        // AJAX request on form submission
-        $("#btnSave").click(function () {
-            $.ajax({
-                url: "{{ route('save-biography') }}", // Use your Laravel route
-                type: "POST",
-                data: new FormData($("#biographyForm")[0]),
-                contentType: false,
-                processData: false,
-                success: function (response) {
-                    toastr.success('Biography created successfully.');
-                },
-                error: function (xhr, status, error) {
-                    toastr.error(xhr.responseText);
-                }
-            });
+$(document).ready(function () {
+    $("#btnUpdateBiography").click(function () {
+        // Extract data from the form
+        var formData = new FormData($("#biographyForm")[0]);
+
+        // Get content from TinyMCE editors
+        formData.append('dr_text', tinymce.get('dr_text').getContent());
+        formData.append('ps_text', tinymce.get('ps_text').getContent());
+        formData.append('en_text', tinymce.get('en_text').getContent());
+
+        // Make an AJAX request for updating the biography
+        $.ajax({
+            url: "{{ route('update-biography', ['id' => $biography->id]) }}",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                toastr.success('Biography updated successfully.');
+            },
+            error: function (xhr, status, error) {
+                toastr.error(xhr.responseText);
+            }
         });
     });
-    $(document).ready(function () {
-        $("#btnUpdate").click(function () {
-            // Extract data from the form
-            var formData = new FormData($("#biographyForm")[0]);
-
-            // Make an AJAX request for updating the biography
-            $.ajax({
-                url: "{{ route('update-biography', ['id' => $biography->id]) }}",
-                type: "POST",
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function (response) {
-                    toastr.success('Biography updated successfully.');
-                },
-                error: function (xhr, status, error) {
-                    toastr.error(xhr.responseText);
-                }
-            });
-        });
-    });
-
+});
     function deleteBiography(biographyId) {
         // Make an AJAX request to delete the biography
         if (confirm("Are you sure you want to delete this biography?")) {

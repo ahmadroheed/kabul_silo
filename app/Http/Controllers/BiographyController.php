@@ -37,21 +37,38 @@ class BiographyController extends Controller
         return response()->json(['message' => 'Biography saved successfully']);
     }
 
-    public function update(Request $request, $id)
+    public function updateBiography(Request $request, $id)
     {
-        // Validate and update the biography
-        // Make sure to add validation rules based on your requirements
-        $biography = Biography::findOrFail($id);
-        $biography->name = $request->input('name');
-        if ($request->hasFile('photo')) {
-            $biography->photo = $request->file('photo')->store('biography_photos', 'public');
-        }
-        $biography->dr_text = $request->input('dr_text');
-        $biography->ps_text = $request->input('ps_text');
-        $biography->en_text = $request->input('en_text');
-        $biography->save();
-
-        return response()->json(['message' => 'Biography updated successfully']);
+        try {
+            DB::beginTransaction();
+    
+            $biography = DB::table('biography')->where('id', $id)->first();
+    
+            if (!$biography) {
+                return response()->json(['error' => 'Biography not found'], 404);
+            }
+            $updateData = [
+                'name' => $request->input('biographyName'),
+                'dr_text' => $request->input('dr_text'),
+                'ps_text' => $request->input('ps_text'),
+                'en_text' => $request->input('en_text'),
+            ];
+            // Update the image if a new file is provided
+            if ($request->hasFile('biography_photos')) {
+                $file = $request->file('biography_photos');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads'), $fileName);
+                $updateData['photo'] = $fileName;
+            }
+            // Update the record
+            DB::table('biography')->where('id', $id)->update($updateData);
+            DB::commit();
+            return response()->json(['message' => 'Biography updated successfully']);
+        } catch (\Exception $e) {
+            
+            DB::rollBack();
+        $errorMessage = $e->getMessage();
+        return response()->json(['error' => $errorMessage], 500);        }
     }
 
     public function destroy($id)
