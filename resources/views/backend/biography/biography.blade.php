@@ -19,8 +19,21 @@
     <div class="row">
         <div class="col-12">
             @if($isTableEmpty)
-            <a href="#" class="btn btn-primary mb-3">Add Biography</a>
-        @endif
+            <a href="#" class="btn btn-primary mb-3" onclick="showAddBiographyModal()">Add Biography</a>
+            <script>
+                function showAddBiographyModal() {
+                    // Clear the form fields
+                    $("#biographyName").val('');
+                    tinymce.get('dr_text').setContent('');
+                    tinymce.get('ps_text').setContent('');
+                    tinymce.get('en_text').setContent('');
+                    $("#biographyImage").attr("src", '');  // Set the image source to an empty string
+            
+                    // Display the modal
+                    $("#biographyDetailsModal").modal("show");
+                }
+            </script>
+                    @endif
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Biography Details</h3>
@@ -29,42 +42,49 @@
                 <div class="card-body">
                     <table id="biographyTable" class="table table-bordered table-hover">
                         <thead class="text-center">
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Photo</th>
-                            <th>DR Text</th>
-                            <th>PS Text</th>
-                            <th>EN Text</th>
-                            <th>Operations</th>
-                        </tr>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Photo</th>
+                                <th>DR Text</th>
+                                <th>PS Text</th>
+                                <th>EN Text</th>
+                                <th>Operations</th>
+                            </tr>
                         </thead>
                         <tbody class="text-center">
-                        @foreach($biographies as $biography)
-                            <tr>
-                                <td style="vertical-align: middle">{{ $biography->id }}</td>
-                                <td style="vertical-align: middle">{{ $biography->name }}</td>
-                                <td style="vertical-align: middle">
-                                    <img src="{{ asset($biography->photo) }}" alt="Biography Photo"
-                                         style="max-width: 100px; max-height: 100px;">
-                                </td>
-                                <td style="vertical-align: middle">{{ $biography->dr_text }}</td>
-                                <td style="vertical-align: middle">{{ $biography->ps_text }}</td>
-                                <td style="vertical-align: middle">{{ $biography->en_text }}</td>
-                                <td style="vertical-align: middle">
-                                    <button class="btn btn-info btn-sm"
-                                            onclick="showBiographyDetails({{ $biography->id }})">
-                                        <i class="fas fa-pen"></i> Edit
-                                    </button>
-                                    <button class="btn btn-danger btn-sm"
-                                            onclick="deleteBiography({{ $biography->id }})">
-                                        <i class="fas fa-trash"></i> Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforeach
+                            @if($biographies->isEmpty())
+                                <tr>
+                                    <td colspan="7">No biography data found</td>
+                                </tr>
+                            @else
+                                @foreach($biographies as $biography)
+                                    <tr>
+                                        <td style="vertical-align: middle">{{ $biography->id }}</td>
+                                        <td style="vertical-align: middle">{{ $biography->name }}</td>
+                                        <td style="vertical-align: middle">
+                                            <img src="{{ asset('uploads/' . $biography->photo) }}" alt="Biography Photo"
+                                                style="max-width: 100px; max-height: 100px;">
+                                        </td>
+                                        <td style="vertical-align: middle">{{ $biography->dr_text }}</td>
+                                        <td style="vertical-align: middle">{{ $biography->ps_text }}</td>
+                                        <td style="vertical-align: middle">{{ $biography->en_text }}</td>
+                                        <td style="vertical-align: middle">
+                                            <button class="btn btn-info btn-sm"
+                                                    onclick="showBiographyDetails({{ $biography->id }})">
+                                                <i class="fas fa-pen"></i> Edit
+                                            </button>
+                                            <button class="btn btn-danger btn-sm"
+                                                    onclick="deleteBiography({{ $biography->id }})">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
                         </tbody>
                     </table>
+                    
                 </div>
                 <!-- /.card-body -->
             </div>
@@ -200,6 +220,7 @@ function showBiographyDetails(biographyId) {
 </script>
 <script>
 $(document).ready(function () {
+    $(document).ready(function () {
     $("#btnUpdateBiography").click(function () {
         // Extract data from the form
         var formData = new FormData($("#biographyForm")[0]);
@@ -209,15 +230,24 @@ $(document).ready(function () {
         formData.append('ps_text', tinymce.get('ps_text').getContent());
         formData.append('en_text', tinymce.get('en_text').getContent());
 
+        // Check if the biography ID is available
+        var biographyId = "{{ $biography->id ?? null }}";
+
+        // Determine the URL based on the presence of biographyId
+        var url = biographyId
+            ? "{{ route('update-biography', ['id' => ':id']) }}".replace(':id', biographyId)
+            : "{{ route('view-biography') }}";
+
         // Make an AJAX request for updating the biography
         $.ajax({
-            url: "{{ route('update-biography', ['id' => $biography->id]) }}",
+            url: url,
             type: "POST",
             data: formData,
             contentType: false,
             processData: false,
             success: function (response) {
                 toastr.success('Biography updated successfully.');
+                window.location.href = url;  // Redirect to the appropriate URL
             },
             error: function (xhr, status, error) {
                 toastr.error(xhr.responseText);
@@ -225,6 +255,8 @@ $(document).ready(function () {
         });
     });
 });
+
+
     function deleteBiography(biographyId) {
         // Make an AJAX request to delete the biography
         if (confirm("Are you sure you want to delete this biography?")) {
@@ -236,7 +268,7 @@ $(document).ready(function () {
                 },
                 success: function (response) {
                     toastr.success('Biography deleted successfully.');
-                    // Optionally, you can remove the table row from the UI
+                    window.location.href = "{{ route('view-biography') }}";
                 },
                 error: function (xhr, status, error) {
                     toastr.error(xhr.responseText);
@@ -244,6 +276,48 @@ $(document).ready(function () {
             });
         }
     }
+    function showAddBiographyModal() {
+                    // Initialize TinyMCE for textareas
+                    tinymce.init({
+                selector: '#dr_text',
+                apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p',
+                setup: function (editor) {
+                    editor.on('init', function () {
+                        if (biography.dr_text) {
+                            editor.setContent('');
+                        }
+                    });
+                }
+            });
+
+            tinymce.init({
+                selector: '#ps_text',
+                apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p',
+                setup: function (editor) {
+                    editor.on('init', function () {
+                        if (biography.ps_text) {
+                            editor.setContent('');
+                        }
+                    });
+                }
+            });
+
+            tinymce.init({
+                selector: '#en_text',
+                apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p',
+                setup: function (editor) {
+                    editor.on('init', function () {
+                        if (biography.en_text) {
+                            editor.setContent('');
+                        }                    
+                    });
+                }
+            });
+    $("#biographyDetailsModal").modal("show");
+}
+
 </script>
+
+
 
 

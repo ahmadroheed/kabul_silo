@@ -41,18 +41,18 @@ class BiographyController extends Controller
     {
         try {
             DB::beginTransaction();
-    
+        
+            $id = $request->input('biographyID');
+        
             $biography = DB::table('biography')->where('id', $id)->first();
-    
-            if (!$biography) {
-                return response()->json(['error' => 'Biography not found'], 404);
-            }
+        
             $updateData = [
                 'name' => $request->input('biographyName'),
                 'dr_text' => $request->input('dr_text'),
                 'ps_text' => $request->input('ps_text'),
                 'en_text' => $request->input('en_text'),
             ];
+        
             // Update the image if a new file is provided
             if ($request->hasFile('biography_photos')) {
                 $file = $request->file('biography_photos');
@@ -60,23 +60,29 @@ class BiographyController extends Controller
                 $file->move(public_path('uploads'), $fileName);
                 $updateData['photo'] = $fileName;
             }
-            // Update the record
-            DB::table('biography')->where('id', $id)->update($updateData);
+        
+            if ($biography) {
+                // Update the record if it exists
+                DB::table('biography')->where('id', $id)->update($updateData);
+            } else {
+                // Create a new record if it doesn't exist
+                DB::table('biography')->insert($updateData);
+            }
+        
             DB::commit();
             return response()->json(['message' => 'Biography updated successfully']);
         } catch (\Exception $e) {
-            
             DB::rollBack();
-        $errorMessage = $e->getMessage();
-        return response()->json(['error' => $errorMessage], 500);        }
+            $errorMessage = $e->getMessage();
+            return response()->json(['error' => $errorMessage], 500);
+        }
+        
     }
 
-    public function destroy($id)
+    public function deleteBiography($id)
     {
-        // Delete the biography
-        $biography = Biography::findOrFail($id);
-        $biography->delete();
-
+        // Delete the biography using Query Builder
+        DB::table('biography')->where('id', $id)->delete();
         return response()->json(['message' => 'Biography deleted successfully']);
     }
 
