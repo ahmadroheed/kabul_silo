@@ -39,7 +39,6 @@
                     }else{
                        $slider_text_display = "display: none;";
                     }
-                  
                   ?>
                <!-- Slide 1 -->
                <div class="carousel-item {{$active}}" style="background-image: url('{{ asset('uploads/' . $slider->photo) }}')">
@@ -126,21 +125,18 @@
                   $activities_en_text = $info->en_text;
                }
             }
-            
-            
-            
             if (Session::get('locale') == 'dr') {
-               $history_text = $history_dr_text;
-               $stracture_text = $stracture_dr_text;
-               $activities_text = $activities_dr_text;
+               $history_text = $info->dr_text;
+               $stracture_text = $info->dr_text;
+               $activities_text = $info->dr_text;
              }else if (Session::get('locale') == 'ps') {
-               $history_text = $history_ps_text;
-               $stracture_text = $stracture_ps_text;
-               $activities_text = $activities_ps_text;
+               $history_text =$info->ps_text;
+               $stracture_text = $info->ps_text;
+               $activities_text = $info->ps_text;
              }else if (Session::get('locale') == 'en'){
-               $history_text = $history_en_text;
-               $stracture_text = $stracture_en_text;
-               $activities_text = $activities_en_text;
+               $history_text = $info->en_text;
+               $stracture_text = $info->en_text;
+               $activities_text = $info->en_text;
              }
             ?>
          <!-- ======= Portfolio Section ======= -->

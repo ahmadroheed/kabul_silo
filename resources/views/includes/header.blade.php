@@ -33,6 +33,7 @@
           <li><a href="/gallary" class="{{ (isset($nav_gallary) && $nav_gallary==1) ? 'active':'' }}">@lang('labels.gallary')</a></li>
           <li><a href="/news" class="{{ (isset($nav_news) && $nav_news==1) ? 'active':'' }}">@lang('labels.news')</a></li>
           <li><a href="/contact" class="{{ (isset($nav_contact) && $nav_contact==1) ? 'active':'' }}">@lang('labels.contact')</a></li>
+          <li><a href="/update" class="{{ (isset($nav_contact) && $nav_contact==1) ? 'active':'' }}">@lang('labels.Login')</a></li>
 
           @if(Session::get('locale') == 'en')
             <li><a href="/locale/dr">دری</a></li>
@@ -44,7 +45,6 @@
             <li><a href="/locale/dr">دری</a></li>
             <li><a href="/locale/en">English</a></li>
           @endif
-          
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->

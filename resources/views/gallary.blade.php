@@ -44,8 +44,8 @@
         <div class="row portfolio-container" data-aos="fade-up">
 <?php 
 
-use App\Models\Gallary;
-  $gallarys = Gallary::orderBy('id','desc')->get();
+use App\Models\Gallery;
+  $gallarys = Gallery::orderBy('id','desc')->get();
   foreach ($gallarys as $gallary) {  
     if ($gallary->type == 1) {
        $type = 'filter-party_activities';

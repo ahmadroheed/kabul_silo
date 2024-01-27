@@ -17,7 +17,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/cpanel/home';
+    public const HOME = '/view-sliders';
 
     /**
      * Define your route model bindings, pattern filters, etc.

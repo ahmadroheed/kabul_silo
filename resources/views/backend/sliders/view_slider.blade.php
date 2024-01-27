@@ -135,15 +135,14 @@ function showSliderDetails(sliderId) {
             $("#sliderTitle").val(slider.title);
             $("#sliderText").val(slider.text);
             $("#sliderID").val(slider.id);
-
             // Set the image source dynamically
             $("#sliderImage").attr("src", "{{ asset('uploads/') }}/" + slider.photo);
-
             // Display the modal
             $("#sliderDetailsModal").modal("show");
         },
         error: function (xhr, status, error) {
-            toastr.error(xhr.responseText);
+            //toastr.error(xhr.responseText);
+            console.log(xhr.responseText);
         }
     });
 }

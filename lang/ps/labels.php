@@ -19,6 +19,7 @@ return [
 	'documents' => 'د اسنادو آرشیف',
 	'news' => 'خبرونه',
 	'contact' => 'اړیکه',
+	'login' => 'ننوتل',
 
 	'history' => 'تاریخچه',
 	'structure' => 'جوړښت',

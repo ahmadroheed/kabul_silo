@@ -8,33 +8,51 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BiographyController;
+use App\Http\Controllers\InformationController;
+use App\Http\Controllers\NewsController;
+use App\Http\Controllers\GalleryController;
 
 
 
 Route::post('/authenticate', [LoginController::class, 'authenticate'])->name('authenticate');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::get('/add-sliders', [SliderController::class, 'index'])->name('add-sliders');
-Route::get('/view-sliders', [SliderController::class, 'viewSliderPage'])->name('view-sliders');
-Route::post('/save-slider', [SliderController::class, 'saveSlider'])->name('save-slider');
-Route::get('/get-biography-details/{id}', [BiographyController::class, 'getBiographyDetails']);
-Route::delete('/delete-slider/{id}', [SliderController::class, 'deleteSlider']);
-Route::post('/update-slider/{id}', [SliderController::class, 'updateSlider']);
 
-// View all biographies
-Route::get('/biography', [BiographyController::class, 'index'])->name('view-biography');
-
-
-// Delete biography
-Route::delete('/delete-biography/{id}', [BiographyController::class, 'deleteBiography']);
-Route::post('/save-biography', [BiographyController::class, 'store'])->name('save-biography');
-
-// Update biography
-Route::post('/update-biography/{id}', [BiographyController::class, 'updateBiography'])->name('update-biography');
 
 Route::get('/update', function () {
     return view('auth.login');
 });
 Route::group(['middleware' => ['auth']], function () {
+    Route::get('/add-sliders', [SliderController::class, 'index'])->name('add-sliders');
+Route::get('/view-sliders', [SliderController::class, 'viewSliderPage'])->name('view-sliders');
+Route::post('/save-slider', [SliderController::class, 'saveSlider'])->name('save-slider');
+Route::get('/get-biography-details/{id}', [BiographyController::class, 'getBiographyDetails']);
+Route::get('/get-slider-details/{id}', [SliderController::class, 'getSliderDetails']);
+Route::delete('/delete-slider/{id}', [SliderController::class, 'deleteSlider']);
+Route::post('/update-slider/{id}', [SliderController::class, 'updateSlider']);
+Route::get('/biography', [BiographyController::class, 'index'])->name('view-biography');
+Route::delete('/delete-biography/{id}', [BiographyController::class, 'deleteBiography']);
+Route::post('/save-biography', [BiographyController::class, 'store'])->name('save-biography');
+Route::post('/update-biography/{id}', [BiographyController::class, 'updateBiography'])->name('update-biography');
+Route::get('/view-information', [InformationController::class, 'index'])->name('view-information');
+Route::get('/get-information-details/{id}', [InformationController::class, 'getInformationDetails']);
+Route::post('/update-information/{id?}', [InformationController::class, 'updateInformation'])->name('update-information');
+Route::delete('/delete-information/{id}', [InformationController::class, 'deleteInformation']);
+Route::get('/view-news', [NewsController::class, 'index'])->name('view-news');
+Route::post('/save-news', [NewsController::class, 'store'])->name('save-news');
+Route::get('/view-add-news', [NewsController::class, 'viewAddNewsPage'])->name('view-add-news');
+Route::get('/get-news-details/{id}', [NewsController::class, 'getNewsDetails'])->name('get-news-details');
+Route::get('/news', [NewsController::class, 'index'])->name('view-news');
+Route::get('/edit-news/{id}', [NewsController::class, 'edit'])->name('edit-news');
+Route::post('/update-news/{id}', [NewsController::class, 'update'])->name('update-news');
+Route::delete('/delete-news/{id}', [NewsController::class, 'deleteNews'])->name('delete-news');
+Route::get('/gallery', [GalleryController::class, 'index'])->name('view-gallery');
+Route::get('/gallery/create', [GalleryController::class, 'create'])->name('create-gallery');
+Route::post('/gallery/store', [GalleryController::class, 'store'])->name('store-gallery');
+Route::get('/gallery/edit/{id}', [GalleryController::class, 'edit'])->name('edit-gallery');
+Route::post('/gallery/update/{id}', [GalleryController::class, 'update'])->name('update-gallery');
+Route::delete('/gallery/delete/{id}', [GalleryController::class, 'destroy'])->name('delete-gallery');
+Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage'])->name('upload-gallery-image');
+
 
     Route::get('/update_home', function () {
         return view('cpanel.home');

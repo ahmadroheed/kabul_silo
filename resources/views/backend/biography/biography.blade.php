@@ -20,20 +20,7 @@
         <div class="col-12">
             @if($isTableEmpty)
             <a href="#" class="btn btn-primary mb-3" onclick="showAddBiographyModal()">Add Biography</a>
-            <script>
-                function showAddBiographyModal() {
-                    // Clear the form fields
-                    $("#biographyName").val('');
-                    tinymce.get('dr_text').setContent('');
-                    tinymce.get('ps_text').setContent('');
-                    tinymce.get('en_text').setContent('');
-                    $("#biographyImage").attr("src", '');  // Set the image source to an empty string
-            
-                    // Display the modal
-                    $("#biographyDetailsModal").modal("show");
-                }
-            </script>
-                    @endif
+            @endif
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Biography Details</h3>
@@ -74,9 +61,8 @@
                                                     onclick="showBiographyDetails({{ $biography->id }})">
                                                 <i class="fas fa-pen"></i> Edit
                                             </button>
-                                            <button class="btn btn-danger btn-sm"
-                                                    onclick="deleteBiography({{ $biography->id }})">
-                                                <i class="fas fa-trash"></i> Delete
+                                            <button class="btn btn-danger btn-sm" id="btnDeleteBiography" data-biography-id="{{ $biography->id }}">
+                                            <i class="fas fa-trash"></i> Delete
                                             </button>
                                         </td>
                                     </tr>
@@ -84,7 +70,6 @@
                             @endif
                         </tbody>
                     </table>
-                    
                 </div>
                 <!-- /.card-body -->
             </div>
@@ -112,6 +97,7 @@
                                 <img id="biography_photos" src="" alt="Biography Photo"
                                      style="max-width: 100%; max-height: 200px;">
                             </div>
+                            <input type="hidden" >
                             <div class="form-group">
                                 <label for="biographyName">Name</label>
                                 <input type="text" class="form-control" name="biographyName" id="biographyName"
@@ -150,7 +136,7 @@
                             <input type="hidden" id="biographyID" name="biographyID">
                         </div>
                         <div class="card-footer">
-                            <button type="button" id="btnUpdateBiography" class="btn btn-primary">Save</button>
+                            <button type="button" id="btnUpdateBiography" name="btnUpdateBiography" class="btn btn-primary">Save</button>
                         </div>
                     </form>
                 </div>
@@ -158,106 +144,15 @@
         </div>
     </div>
 @endsection
-<script src="{{asset('assets/plugins/jquery/jquery.min.js')}}"></script>
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
+<script src="https://cdn.tiny.cloud/1/udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
-function showBiographyDetails(biographyId) {
-    $.ajax({
-        url: "/get-biography-details/" + biographyId,
-        type: "GET",
-        success: function (biography) {
-            // Populate the modal fields with biography details
-            $("#biographyName").val(biography.name);
-            
-            // Initialize TinyMCE for textareas
-            tinymce.init({
-                selector: '#dr_text',
-                apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p',
-                setup: function (editor) {
-                    editor.on('init', function () {
-                        if (biography.dr_text) {
-                            editor.setContent(biography.dr_text);
-                        }
-                    });
-                }
-            });
-
-            tinymce.init({
-                selector: '#ps_text',
-                apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p',
-                setup: function (editor) {
-                    editor.on('init', function () {
-                        if (biography.ps_text) {
-                            editor.setContent(biography.ps_text);
-                        }
-                    });
-                }
-            });
-
-            tinymce.init({
-                selector: '#en_text',
-                apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p',
-                setup: function (editor) {
-                    editor.on('init', function () {
-                        if (biography.en_text) {
-                            editor.setContent(biography.en_text);
-                        }                    
-                    });
-                }
-            });
-
-            // Set the image source dynamically
-            $("#biography_photos").attr("src", "{{ asset('uploads/') }}/" + biography.photo);
-
-            // Display the modal
-            $("#biographyDetailsModal").modal("show");
-        },
-        error: function (xhr, status, error) {
-            toastr.error(xhr.responseText);
-        }
-    });
-}
-</script>
-<script>
-$(document).ready(function () {
     $(document).ready(function () {
-    $("#btnUpdateBiography").click(function () {
-        // Extract data from the form
-        var formData = new FormData($("#biographyForm")[0]);
+    // Handle click event for the delete button
+    $("#btnDeleteBiography").click(function () {
+        // Get the biographyId from the data attribute
+        var biographyId = $(this).data("biography-id");
 
-        // Get content from TinyMCE editors
-        formData.append('dr_text', tinymce.get('dr_text').getContent());
-        formData.append('ps_text', tinymce.get('ps_text').getContent());
-        formData.append('en_text', tinymce.get('en_text').getContent());
-
-        // Check if the biography ID is available
-        var biographyId = "{{ $biography->id ?? null }}";
-
-        // Determine the URL based on the presence of biographyId
-        var url = biographyId
-            ? "{{ route('update-biography', ['id' => ':id']) }}".replace(':id', biographyId)
-            : "{{ route('view-biography') }}";
-
-        // Make an AJAX request for updating the biography
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function (response) {
-                toastr.success('Biography updated successfully.');
-                window.location.href = url;  // Redirect to the appropriate URL
-            },
-            error: function (xhr, status, error) {
-                toastr.error(xhr.responseText);
-            }
-        });
-    });
-});
-
-
-    function deleteBiography(biographyId) {
         // Make an AJAX request to delete the biography
         if (confirm("Are you sure you want to delete this biography?")) {
             $.ajax({
@@ -275,49 +170,71 @@ $(document).ready(function () {
                 }
             });
         }
-    }
-    function showAddBiographyModal() {
-                    // Initialize TinyMCE for textareas
-                    tinymce.init({
-                selector: '#dr_text',
-                apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p',
-                setup: function (editor) {
-                    editor.on('init', function () {
-                        if (biography.dr_text) {
-                            editor.setContent('');
-                        }
-                    });
-                }
-            });
-
-            tinymce.init({
-                selector: '#ps_text',
-                apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p',
-                setup: function (editor) {
-                    editor.on('init', function () {
-                        if (biography.ps_text) {
-                            editor.setContent('');
-                        }
-                    });
-                }
-            });
-
-            tinymce.init({
-                selector: '#en_text',
-                apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p',
-                setup: function (editor) {
-                    editor.on('init', function () {
-                        if (biography.en_text) {
-                            editor.setContent('');
-                        }                    
-                    });
-                }
-            });
-    $("#biographyDetailsModal").modal("show");
-}
+    });
+});
 
 </script>
+<script>
+    // Initialize TinyMCE during the initial page load
+    $(document).ready(function () {
+        tinymce.init({
+            selector: '#dr_text, #ps_text, #en_text',
+            apiKey: 'udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p'
+            // Add other TinyMCE options if needed
+        });
+    });
 
+    function showAddBiographyModal() {
+        tinymce.get('dr_text').setContent('');
+        tinymce.get('ps_text').setContent('');
+        tinymce.get('en_text').setContent('');
+        $("#biographyDetailsModal").modal("show");
+    }
 
+    function showBiographyDetails(biographyId) {
+        $.ajax({
+            url: "/get-biography-details/" + biographyId,
+            type: "GET",
+            success: function (biography) {
+                // Populate the modal fields with biography details
+                $("#biographyName").val(biography.name);
+                // Set the content of TinyMCE editors
+                tinymce.get('dr_text').setContent(biography.dr_text || '');
+                tinymce.get('ps_text').setContent(biography.ps_text || '');
+                tinymce.get('en_text').setContent(biography.en_text || '');
+                // Set the image source dynamically
+                $("#biography_photos").attr("src", "{{ asset('uploads/') }}/" + biography.photo);
+                // Display the modal
+                $("#biographyDetailsModal").modal("show");
+            },
+            error: function (xhr, status, error) {
+                toastr.error(xhr.responseText);
+            }
+        });
+    }
 
-
+    $(document).ready(function () {
+        $("#btnUpdateBiography").click(function () {
+            var formData = new FormData($("#biographyForm")[0]);
+            formData.append('dr_text', tinymce.get('dr_text').getContent());
+            formData.append('ps_text', tinymce.get('ps_text').getContent());
+            formData.append('en_text', tinymce.get('en_text').getContent());
+            var biographyId = "{{ $biography->id ?? -1 }}";
+        // Make an AJAX request for updating or viewing the biography
+        $.ajax({
+            url: '/update-biography/' + biographyId,
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                toastr.success(response.message);
+                window.location.href = "{{ route('view-biography') }}";
+            },
+            error: function (xhr, status, error) {
+                toastr.error(xhr.responseText);
+            }
+        });
+    });
+});
+</script>

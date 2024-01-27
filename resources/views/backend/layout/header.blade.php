@@ -15,7 +15,6 @@
     <!-- Ionicons -->
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <!-- Tempusdominus Bootstrap 4 -->
-    <script src="https://cdn.tiny.cloud/1/udd83ox8ggme12cqxl3djjr6kqoe2fesllbrd9xsrxk8t17p/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
     <link rel="stylesheet"
           href="{{asset('assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css')}}">

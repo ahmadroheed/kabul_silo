@@ -19,6 +19,7 @@ return [
 	'documents' => 'Archive of Documents',
 	'news' => '‌News',
 	'contact' => 'Contact',
+	'login' => 'login',
 
 	'history' => 'History',
 	'structure' => 'Structure',

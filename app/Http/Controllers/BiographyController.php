@@ -41,18 +41,13 @@ class BiographyController extends Controller
     {
         try {
             DB::beginTransaction();
-        
-            $id = $request->input('biographyID');
-        
-            $biography = DB::table('biography')->where('id', $id)->first();
-        
+            $biography = DB::table('biography')->where('id', $id)->get();
             $updateData = [
                 'name' => $request->input('biographyName'),
                 'dr_text' => $request->input('dr_text'),
                 'ps_text' => $request->input('ps_text'),
                 'en_text' => $request->input('en_text'),
             ];
-        
             // Update the image if a new file is provided
             if ($request->hasFile('biography_photos')) {
                 $file = $request->file('biography_photos');
@@ -60,15 +55,13 @@ class BiographyController extends Controller
                 $file->move(public_path('uploads'), $fileName);
                 $updateData['photo'] = $fileName;
             }
-        
-            if ($biography) {
+            if ($biography->count() > 0) {
                 // Update the record if it exists
                 DB::table('biography')->where('id', $id)->update($updateData);
             } else {
                 // Create a new record if it doesn't exist
                 DB::table('biography')->insert($updateData);
             }
-        
             DB::commit();
             return response()->json(['message' => 'Biography updated successfully']);
         } catch (\Exception $e) {
@@ -76,7 +69,6 @@ class BiographyController extends Controller
             $errorMessage = $e->getMessage();
             return response()->json(['error' => $errorMessage], 500);
         }
-        
     }
 
     public function deleteBiography($id)
