@@ -11,6 +11,7 @@ use App\Http\Controllers\BiographyController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\DashboardController;
 
 
 
@@ -52,6 +53,7 @@ Route::get('/gallery/edit/{id}', [GalleryController::class, 'edit'])->name('edit
 Route::post('/gallery/update/{id}', [GalleryController::class, 'update'])->name('update-gallery');
 Route::delete('/gallery/delete/{id}', [GalleryController::class, 'destroy'])->name('delete-gallery');
 Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage'])->name('upload-gallery-image');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 
     Route::get('/update_home', function () {

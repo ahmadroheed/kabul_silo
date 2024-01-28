@@ -1,87 +1,195 @@
 <!DOCTYPE html>
-<html lang="en">
-@extends('backend.layout.layout')
-<script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-
-@section('page_header')
+<html lang="en"> @extends('backend.layout.layout') @section('page_header')
     <div class="row mb-2">
         <div class="col-sm-6">
             <h1 class="m-0">Gallery</h1>
-        </div><!-- /.col -->
+        </div>
+        <!-- /.col -->
         <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-                <li class="breadcrumb-item"><a href="#">Gallery</a></li>
+                <li class="breadcrumb-item">
+                    <a href="#">Gallery</a>
+                </li>
                 <li class="breadcrumb-item active">Add</li>
             </ol>
-        </div><!-- /.col -->
-    </div><!-- /.row -->
-@endsection
-
-@section('content')
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+    @endsection @section('content')
     <div class="row">
         <div class="col-md-12">
             <div class="card card-primary">
                 <div class="card-header">
                     <h3 class="card-title">Gallery Details</h3>
                 </div>
-                <form id="galleryImageForm" action="{{ route('upload-gallery-image') }}" class="dropzone">
-                    @csrf
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="galleryType">Type</label>
-                            <select class="form-control" name="type" id="galleryType" required>
-                                <option value="1">Wheat Storage</option>
-                                <option value="2">Production of Flour</option>
-                                <option value="3">Production of All Kinds of Bread</option>
-                            </select>
+                <form id="galleryImageForm" action="{{ route('upload-gallery-image') }}" method="post"> 
+                  @csrf
+                  <div class="card-body">
+                    <div class="form-group">
+                        <label for="galleryType">Type</label>
+                        <select class="form-control" name="type" id="galleryType" required>
+                            <option value="">Select type of gallery</option>
+                            <option value="1">Wheat Storage</option>
+                            <option value="2">Production of Flour</option>
+                            <option value="3">Production of All Kinds of Bread</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Dropzone Container -->
+                <div class="form-group">
+                    <div id="dropzoneContainer">
+                        <div id="actions" class="row">
+                            <div class="col-lg-6">
+                                <div class="btn-group w-100">
+                                    <span class="btn btn-success col fileinput-button">
+                                        <i class="fas fa-plus"></i>
+                                        <span>Add files</span>
+                                    </span>
+                                    <button type="submit" class="btn btn-primary col start">
+                                        <i class="fas fa-upload"></i>
+                                        <span>Start upload</span>
+                                    </button>
+                                    <button type="reset" class="btn btn-warning col cancel">
+                                        <i class="fas fa-times-circle"></i>
+                                        <span>Cancel upload</span>
+                                    </button>
+                                </div>
+                            </div>
+                
+                            <div class="col-lg-6 d-flex align-items-center">
+                                <div class="fileupload-process w-100">
+                                    <div id="total-progress" class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                        <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="table table-striped files" id="previews">
+                            <div id="template" class="row mt-2">
+                                <div class="col-auto">
+                                    <span class="preview">
+                                        <img src="data:," alt="" data-dz-thumbnail />
+                                    </span>
+                                </div>
+                
+                                <div class="col d-flex align-items-center">
+                                    <p class="mb-0">
+                                        <span class="lead" data-dz-name></span> ( <span data-dz-size></span>)
+                                    </p>
+                                    <strong class="error text-danger" data-dz-errormessage></strong>
+                                </div>
+                
+                                <div class="col-4 d-flex align-items-center">
+                                    <div class="progress progress-striped active w-100" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                        <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
+                                    </div>
+                                </div>
+                
+                                <div class="col-auto d-flex align-items-center">
+                                    <div class="btn-group">
+                                        <button class="btn btn-primary start">
+                                            <i class="fas fa-upload"></i>
+                                            <span>Start</span>
+                                        </button>
+                                        <button data-dz-remove class="btn btn-warning cancel">
+                                            <i class="fas fa-times-circle"></i>
+                                            <span>Cancel</span>
+                                        </button>
+                                        <button data-dz-remove class="btn btn-danger delete">
+                                            <i class="fas fa-trash"></i>
+                                            <span>Delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <!-- Add a separate div for Dropzone if needed -->
-                    <div id="galleryDropzone" class="dropzone"></div>
+                </div>
+                
+                                  
                     <div class="card-footer">
                         <button type="button" id="btnSaveGallery" class="btn btn-primary">Save</button>
                     </div>
                 </form>
             </div>
         </div>
+        <script src="{{ asset('assets/plugins/dropzone/min/dropzone.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/dropzone/min/dropzone.min.css') }}"></script>
+        <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
+
     </div>
-@endsection
-
-<script>
-    Dropzone.options.galleryImageForm = {
-        paramName: 'image', // The name that will be used to transfer the file
-        maxFilesize: 2, // MB
-        acceptedFiles: 'image/*',
-        success: function (file, response) {
-            toastr.success(response.message);
-            // You may handle the response, update the UI, etc.
-        },
-        error: function (file, response) {
-            toastr.error(response.error);
+    <script>
+        // DropzoneJS Demo Code Start
+        Dropzone.autoDiscover = false
+        // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
+        var previewNode = document.querySelector("#template")
+        previewNode.id = ""
+        var previewTemplate = previewNode.parentNode.innerHTML
+        previewNode.parentNode.removeChild(previewNode)
+        var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
+            url: "/target-url", // Set the url
+            thumbnailWidth: 80,
+            thumbnailHeight: 80,
+            parallelUploads: 20,
+            previewTemplate: previewTemplate,
+            autoQueue: false, // Make sure the files aren't queued until manually added
+            previewsContainer: "#previews", // Define the container to display the previews
+            clickable: ".fileinput-button" // Define the element that should be used as click trigger to select files.
+        })
+        myDropzone.on("addedfile", function(file) {
+            // Hookup the start button
+            file.previewElement.querySelector(".start").onclick = function() {
+                myDropzone.enqueueFile(file)
+            }
+        })
+        // Update the total progress bar
+        myDropzone.on("totaluploadprogress", function(progress) {
+            document.querySelector("#total-progress .progress-bar").style.width = progress + "%"
+        })
+        myDropzone.on("sending", function(file) {
+            // Show the total progress bar when upload starts
+            document.querySelector("#total-progress").style.opacity = "1"
+            // And disable the start button
+            file.previewElement.querySelector(".start").setAttribute("disabled", "disabled")
+        })
+        // Hide the total progress bar when nothing's uploading anymore
+        myDropzone.on("queuecomplete", function(progress) {
+            document.querySelector("#total-progress").style.opacity = "0"
+        })
+        // Setup the buttons for all transfers
+        // The "add files" button doesn't need to be setup because the config
+        // `clickable` has already been specified.
+        document.querySelector("#actions .start").onclick = function() {
+            myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED))
         }
-    };
-
-    $(document).ready(function () {
-        // AJAX request on form submission
-        $("#btnSaveGallery").click(function () {
-            $.ajax({
-                url: "{{ route('store-gallery') }}", // Use your Laravel route
-                type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    type: $("#galleryType").val(),
-                    // Add other form fields if needed
-                },
-                success: function (response) {
-                    toastr.success('Gallery created successfully.');
-                    window.location.href = "{{ route('view-gallery') }}";
-                },
-                error: function (xhr, status, error) {
-                    toastr.error(xhr.responseText);
-                }
+        document.querySelector("#actions .cancel").onclick = function() {
+            myDropzone.removeAllFiles(true)
+        }
+        // DropzoneJS Demo Code End
+    </script>
+    <script>
+        $(document).ready(function() {
+            // AJAX request on form submission
+            $("#btnSaveGallery").click(function() {
+                $.ajax({
+                    url: "{{ route('store-gallery') }}", // Use your Laravel route
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        type: $("#galleryType").val(),
+                        // Add other form fields if needed
+                    },
+                    success: function(response) {
+                        toastr.success('Gallery created successfully.');
+                        window.location.href = "{{ route('view-gallery') }}";
+                    },
+                    error: function(xhr, status, error) {
+                        toastr.error(xhr.responseText);
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
+@endsection
