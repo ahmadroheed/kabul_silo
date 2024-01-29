@@ -215,7 +215,6 @@ function showNewsDetails(newsId) {
             formData.append('newsTextPashto', tinymce.get('newsTextPashto').getContent());
             formData.append('newsTitleEnglish', tinymce.get('newsTitleEnglish').getContent());
             formData.append('newsTextEnglish', tinymce.get('newsTextEnglish').getContent());
-            
             var newsId = $('#NewsID').val();
             $.ajax({
                 url: '/update-news/' + newsId,
@@ -228,8 +227,7 @@ function showNewsDetails(newsId) {
                     window.location.href = "{{ route('view-news') }}";
                 },
                 error: function (xhr, status, error) {
-                    // toastr.error(xhr.responseText);
-                    console.log(xhr.responseText);
+                    toastr.error(xhr.responseText);
                 }
             });
         });

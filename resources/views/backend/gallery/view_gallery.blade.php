@@ -43,10 +43,10 @@
                                     style="max-width: 100px; max-height: 100px;">
                                 </td>
                                 <td style="vertical-align: middle">
-                                    <a href="javascript:void(0);" class="btn btn-info btn-sm" onclick="showEditGallaryModal({{ $gallery->id }})">
+                                    <a href="javascript:void(0);" class="btn btn-info btn-sm" onclick="showEditGalleryModal({{ $gallery->id }})">
                                         <i class="fas fa-pen"></i> Edit
                                     </a>
-                                    <a href="javascript:void(0);" class="btn btn-danger btn-sm" onclick="openDeleteModal({{ $gallery->id }})">
+                                    <a href="javascript:void(0);" class="btn btn-danger btn-sm" onclick="deleteGallery({{ $gallery->id }})">
                                         <i class="fas fa-trash"></i> Delete
                                     </a>
                                 </td>
@@ -91,7 +91,7 @@
                         <input type="file" class="form-control-file" id="editGalleryPhoto" name="editGalleryPhoto">
                     </div>
                     <!-- Hidden Field for Gallery ID -->
-                    <input type="hidden" id="GalleryId" name="GalleryId" value="{{ $gallery->id }}">
+                    <input type="hidden" id="GalleryId" name="GalleryId" value="{{ $gallery->id ?? '' }}">
                 </form>
             </div>
             <div class="modal-footer">
@@ -102,8 +102,10 @@
     </div>
 </div>
 <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 <script>
-    function showEditGallaryModal(galleryId) {
+    function showEditGalleryModal(galleryId) {
     $.ajax({
         url: "/get-gallery-details/" + galleryId,
         type: "GET",
@@ -126,13 +128,15 @@ $(document).ready(function () {
     var galleryId = $("#GalleryId").val();
     // You may need to adjust the form data based on your requirements
     var formData = new FormData($("#editGalleryForm")[0]);
-
     $.ajax({
         url: "/update-gallery/" + galleryId,
         type: "POST",
         data: formData,
         contentType: false,
         processData: false,
+        headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
         success: function (response) {
             toastr.success(response.message);
             window.location.href = "{{ route('view-gallery') }}";
@@ -145,8 +149,23 @@ $(document).ready(function () {
 });
 </script>
 <script>
-    function openDeleteModal(galleryId) {
-        $('#deleteGalleryModal').modal('show');
-    }
+        function deleteGallery(galleryId) {
+            if (confirm("Are you sure you want to delete this photo?")) {
+                $.ajax({
+                    url: "/delete-gallery/" + galleryId,
+                    type: "DELETE",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (response) {
+                        toastr.success('photo deleted successfully.');
+                        window.location.href = "{{ route('view-gallery') }}";
+                    },
+                    error: function (xhr, status, error) {
+                        toastr.error(xhr.responseText);
+                    }
+                });
+            }
+        }
 </script>
 @endsection

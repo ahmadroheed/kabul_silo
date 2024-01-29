@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+
 
 
 class GalleryController extends Controller
@@ -37,7 +39,6 @@ class GalleryController extends Controller
                 $fileName = $milliseconds . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
                 $file->move(public_path('uploads/gallery/' . $type), $fileName);
                 $gallery->photo = 'uploads/gallery/' . $type . '/' . $fileName;
-    
                 $gallery->save();
             }
             return response()->json(['message' => 'Gallery photos created successfully.']);
@@ -57,20 +58,21 @@ class GalleryController extends Controller
         try {
             $gallery = Gallery::findOrFail($id);
             $gallery->type = $request->input('type');
-            // Check if a new photo is provided
+            $file = $request->file('editGalleryPhoto');
             if ($request->hasFile('editGalleryPhoto')) {
-                // Delete the previous photo if it exists
                 if (!empty($gallery->photo)) {
                     $previousPhotoPath = public_path($gallery->photo);
                     if (File::exists($previousPhotoPath)) {
                         File::delete($previousPhotoPath);
                     }
                 }
-                $photoPath = $request->file('editGalleryPhoto')->store('upload/'.$gallery->type, 'public');
-                $gallery->photo = $photoPath;
+                $milliseconds = round(microtime(true) * 1000);
+                $fileName = $milliseconds . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/gallery/' . $gallery->type), $fileName);
+                $gallery->photo = 'uploads/gallery/' . $gallery->type . '/' . $fileName;
             }
-                $gallery->save();
-            return response()->json(['success' => 'Gallery updated successfully']);
+            $gallery->save();
+            return response()->json(['message' => 'Gallery updated successfully']);
         } catch (\Exception $e) {
             \Log::error('Error in GalleryController@updateGallery: ' . $e->getMessage());
             return response()->json(['error' => 'Error updating gallery'], 500);
@@ -79,23 +81,14 @@ class GalleryController extends Controller
 
     public function destroy($id)
     {
-        $gallery = Gallery::findOrFail($id);
-        $gallery->delete();
-
-        return response()->json(['message' => 'Gallery item deleted successfully']);
-    }
-    public function uploadImage(Request $request)
-    {
-        try {
-            $request->validate([
-                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust image validation rules
-            ]);
-            $imageFile = $request->file('image');
-            $imageName = time() . '.' . $imageFile->getClientOriginalExtension();
-            $imageFile->storeAs('gallery_images', $imageName, 'public');
-            return response()->json(['message' => 'Image uploaded successfully', 'image' => $imageName]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+        try{
+            $gallery = Gallery::findOrFail($id);
+            $gallery->delete();
+            return response()->json(['message' => 'Gallery item deleted successfully']);
+        }
+        catch (\Exception $e) {
+            \Log::error('Error in GalleryController@updateGallery: ' . $e->getMessage());
+            return response()->json(['error' => 'Error updating gallery'], 500);
         }
     }
     public function getGalleryDetails($id)
@@ -111,6 +104,5 @@ class GalleryController extends Controller
             \Log::error('Error in GalleryController@getGalleryDetails: ' . $e->getMessage());
             return response()->json(['error' => 'Error fetching gallery details.'], 500);
         }
-        
     }
 }
