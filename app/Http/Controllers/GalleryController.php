@@ -1,69 +1,78 @@
 <?php
-
-// app/Http/Controllers/GalleryController.php
-
 namespace App\Http\Controllers;
 
 use App\Models\Gallery;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+
 
 class GalleryController extends Controller
 {
     public function index()
     {
-        // Implement logic to fetch and display all gallery items
         $galleryList = Gallery::all();
-        return view('backend.gallery.index', ['galleryList' => $galleryList]);
+        return view('backend.gallery.view_gallery', ['galleryList' => $galleryList]);
     }
 
     public function create()
     {
-        // Implement logic to show the form for creating a new gallery item
         return view('backend.gallery.add_gallery');
     }
 
     public function store(Request $request)
     {
-        // Implement logic to store a new gallery item
-        // Make sure to validate and handle the file upload
-        // ...
-
-        // Example: Saving a gallery item
-        $gallery = new Gallery();
-        $gallery->type = $request->input('type');
-        // Handle other fields and file upload
-        // ...
-        $gallery->save();
-
-        return response()->json(['message' => 'Gallery item created successfully']);
+        try {
+            $request->validate([
+                'type' => 'required',
+                'galleryphoto.*' => 'required|file|mimes:jpeg,png,jpg,gif',
+            ]);
+            $files = $request->file('galleryphoto');
+            $type = $request->input('type');
+            foreach ($files as $file) {
+                $gallery = new Gallery();
+                $gallery->type = $type;
+                $milliseconds = round(microtime(true) * 1000);
+                $fileName = $milliseconds . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/gallery/' . $type), $fileName);
+                $gallery->photo = 'uploads/gallery/' . $type . '/' . $fileName;
+    
+                $gallery->save();
+            }
+            return response()->json(['message' => 'Gallery photos created successfully.']);
+        } catch (\Exception $e) {
+            Log::error('Error in GalleryController@store: ' . $e->getMessage());
+            return response()->json(['error' => 'Error creating gallery photos. Please try again.'], 500);
+        }
     }
-
     public function edit($id)
     {
-        // Implement logic to show the form for editing a gallery item
         $gallery = Gallery::findOrFail($id);
         return view('backend.gallery.edit', ['gallery' => $gallery]);
     }
 
     public function update(Request $request, $id)
     {
-        // Implement logic to update a gallery item
-        // Make sure to validate and handle the file upload
-        // ...
-
-        // Example: Updating a gallery item
-        $gallery = Gallery::findOrFail($id);
-        $gallery->type = $request->input('type');
-        // Handle other fields and file upload
-        // ...
-        $gallery->save();
-
-        return response()->json(['message' => 'Gallery item updated successfully']);
+        try {
+            $gallery = Gallery::findOrFail($id);
+    
+            // You may need to adjust the update logic based on your requirements
+            $gallery->type = $request->input('type');
+            // Update other fields as needed
+    
+            // Save the changes
+            $gallery->save();
+    
+            return response()->json(['success' => 'Gallery updated successfully']);
+        } catch (\Exception $e) {
+            \Log::error('Error in GalleryController@updateGallery: ' . $e->getMessage());
+            return response()->json(['error' => 'Error updating gallery'], 500);
+        }
     }
 
     public function destroy($id)
     {
-        // Implement logic to delete a gallery item
         $gallery = Gallery::findOrFail($id);
         $gallery->delete();
 
@@ -72,25 +81,30 @@ class GalleryController extends Controller
     public function uploadImage(Request $request)
     {
         try {
-            // Validate the incoming request data
             $request->validate([
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust image validation rules
             ]);
-
-            // Handle file upload
             $imageFile = $request->file('image');
             $imageName = time() . '.' . $imageFile->getClientOriginalExtension();
             $imageFile->storeAs('gallery_images', $imageName, 'public');
-
-            // You may save the image name or URL in the database here
-            // For example:
-            // $galleryItem = new Gallery();
-            // $galleryItem->image = $imageName;
-            // $galleryItem->save();
-
             return response()->json(['message' => 'Image uploaded successfully', 'image' => $imageName]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+    public function getGalleryDetails($id)
+    {
+        try {
+            $gallery = DB::table('gallary')->where('id', $id)->first();
+            if ($gallery) {
+                return response()->json($gallery);
+            } else {
+                return response()->json(['error' => 'Gallery not found.'], 404);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error in GalleryController@getGalleryDetails: ' . $e->getMessage());
+            return response()->json(['error' => 'Error fetching gallery details.'], 500);
+        }
+        
     }
 }

@@ -72,7 +72,6 @@
 @endsection
 
 <script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
 <script src="https://cdn.tiny.cloud/1/lkssoiuj1x9rkmmfdxy2sok462d7zj6nas8b9eqz770r6sg7/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <!-- Include Toastr CSS and JS files from CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">

@@ -50,12 +50,11 @@ Route::get('/gallery', [GalleryController::class, 'index'])->name('view-gallery'
 Route::get('/gallery/create', [GalleryController::class, 'create'])->name('create-gallery');
 Route::post('/gallery/store', [GalleryController::class, 'store'])->name('store-gallery');
 Route::get('/gallery/edit/{id}', [GalleryController::class, 'edit'])->name('edit-gallery');
-Route::post('/gallery/update/{id}', [GalleryController::class, 'update'])->name('update-gallery');
+Route::post('/update-gallery/{id}', 'GalleryController@updateGallery')->name('update-gallery');
 Route::delete('/gallery/delete/{id}', [GalleryController::class, 'destroy'])->name('delete-gallery');
 Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage'])->name('upload-gallery-image');
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-
+Route::get('/get-gallery-details/{id}', [GalleryController::class, 'getGalleryDetails'])->name('get-gallery-details');
     Route::get('/update_home', function () {
         return view('cpanel.home');
     });
