@@ -56,14 +56,20 @@ class GalleryController extends Controller
     {
         try {
             $gallery = Gallery::findOrFail($id);
-    
-            // You may need to adjust the update logic based on your requirements
             $gallery->type = $request->input('type');
-            // Update other fields as needed
-    
-            // Save the changes
-            $gallery->save();
-    
+            // Check if a new photo is provided
+            if ($request->hasFile('editGalleryPhoto')) {
+                // Delete the previous photo if it exists
+                if (!empty($gallery->photo)) {
+                    $previousPhotoPath = public_path($gallery->photo);
+                    if (File::exists($previousPhotoPath)) {
+                        File::delete($previousPhotoPath);
+                    }
+                }
+                $photoPath = $request->file('editGalleryPhoto')->store('upload/'.$gallery->type, 'public');
+                $gallery->photo = $photoPath;
+            }
+                $gallery->save();
             return response()->json(['success' => 'Gallery updated successfully']);
         } catch (\Exception $e) {
             \Log::error('Error in GalleryController@updateGallery: ' . $e->getMessage());

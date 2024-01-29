@@ -96,7 +96,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger">Edit</button>
+                <button type="button" class="btn btn-danger" id="updateGallery" name="updateGallery">Edit</button>
             </div>
         </div>
     </div>
@@ -122,6 +122,7 @@
     });
 }
 $(document).ready(function () {
+    $("#updateGallery").click(function () {
     var galleryId = $("#GalleryId").val();
     // You may need to adjust the form data based on your requirements
     var formData = new FormData($("#editGalleryForm")[0]);
@@ -140,6 +141,7 @@ $(document).ready(function () {
             toastr.error(xhr.responseText);
         }
     });
+});
 });
 </script>
 <script>
