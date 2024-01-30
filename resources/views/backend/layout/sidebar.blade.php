@@ -134,6 +134,28 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('view-users') }}" class="nav-link">
+                        <i class="fas fa-user"></i>
+                        <p>
+                            Users Management
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('view-users') }}" class="nav-link">
+                                <i class="fas fa-eye"></i>
+                                <p>View Users</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('add-user-page') }}" class="nav-link">
+                                <i class="fas fa-plus-circle"></i>
+                                <p>Add Users</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </nav>
         <!-- Logout Section -->

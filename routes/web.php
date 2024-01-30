@@ -12,6 +12,7 @@ use App\Http\Controllers\InformationController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 
 
 
@@ -55,7 +56,13 @@ Route::delete('/delete-gallery/{id}', [GalleryController::class, 'destroy'])->na
 Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage'])->name('upload-gallery-image');
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/get-gallery-details/{id}', [GalleryController::class, 'getGalleryDetails'])->name('get-gallery-details');
-    Route::get('/update_home', function () {
+Route::get('/add-user', [UserController::class, 'addUserPage'])->name('add-user-page');
+Route::post('/save-user', [UserController::class, 'saveUser'])->name('save-user');
+Route::get('/view-users', [UserController::class, 'viewUsers'])->name('view-users');
+Route::get('/get-user-details/{id}', [UserController::class, 'editUser'])->name('get-user-details');
+Route::put('/update-user/{id}', [UserController::class, 'updateUser'])->name('update-user');
+Route::delete('/delete-user', [UserController::class, 'deleteUser'])->name('delete-user');
+Route::get('/update_home', function () {
         return view('cpanel.home');
     });
     Route::get('/cpanel/home', function () {
