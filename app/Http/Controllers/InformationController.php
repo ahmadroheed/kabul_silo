@@ -18,8 +18,13 @@ class InformationController extends Controller
     public function getInformationDetails($id)
     {
         // Fetch information details based on ID and return as JSON
-        $information = Informations::find($id);
-        return response()->json($information);
+$information = DB::table('informations')->where('id', $id)->first();
+
+if ($information) {
+    return response()->json($information);
+} else {
+    return response()->json(['error' => 'Information not found'], 404);
+}
     }
 
     public function updateInformation(Request $request, $id = null)

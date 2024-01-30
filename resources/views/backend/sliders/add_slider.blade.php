@@ -59,7 +59,6 @@
         </div>
     </div>
 </div>
-@endsection
 <script src="{{asset('assets/plugins/jquery/jquery.min.js')}}"></script>
 <script>
    $(document).ready(function () {
@@ -83,3 +82,5 @@
        });
    });
 </script>
+
+@endsection

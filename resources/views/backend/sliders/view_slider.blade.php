@@ -121,8 +121,6 @@
     </div>
 </div>
 
-
-@endsection
 <script src="{{asset('assets/plugins/jquery/jquery.min.js')}}"></script>
 <script>
 function showSliderDetails(sliderId) {
@@ -194,3 +192,5 @@ function showSliderDetails(sliderId) {
 </script>
 
 
+
+@endsection

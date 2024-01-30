@@ -157,7 +157,7 @@
                 url: "/get-information-details/" + informationId,
                 type: "GET",
                 success: function (information) {
-                    tinymce.get('dr_text').setContent(information.InformationType || '');
+                    $("#InformationType").val(information.type);
                     tinymce.get('dr_text').setContent(information.dr_text || '');
                     tinymce.get('ps_text').setContent(information.ps_text || '');
                     tinymce.get('en_text').setContent(information.en_text || '');
