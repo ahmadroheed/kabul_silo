@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+
 
 
 class UserController extends Controller
@@ -16,7 +18,7 @@ class UserController extends Controller
     public function saveUser(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
@@ -30,13 +32,25 @@ class UserController extends Controller
     }
     public function updateUser(Request $request, $id)
     {
-        $user = User::find($id);
-        $user->update([
-            'username' => $request->input('username'),
-            'email' => $request->input('email'),
-            'password' => $request->input('email'),
-        ]);
-        return response()->json(['message' => 'User updated successfully']);
+        try {
+            $affectedRows = DB::table('users')
+                ->where('id', $id)
+                ->update([
+                    'username' => $request->input('username'),
+                    'email' => $request->input('email'),
+                    'password' => $request->input('email'), // Note: Are you sure you want to set the password to the email address?
+                ]);
+        
+            if ($affectedRows > 0) {
+                return response()->json(['message' => 'User updated successfully']);
+            } else {
+                return response()->json(['error' => 'User not found or no changes made'], 404);
+            }
+        } catch (\Exception $e) {
+            $errorMessage = $e->getMessage();
+            \Log::error($e);
+            return response()->json(['error' => $errorMessage], 500);
+        }
     }
     public function viewUsers()
     {
@@ -46,23 +60,33 @@ class UserController extends Controller
     public function editUser($id)
     {
         try {
-            $user = User::find($id);
-            return response()->json($user);
+            $user = DB::table('users')->where('id', $id)->first();
+        
+            if ($user) {
+                return response()->json($user);
+            } else {
+                return response()->json(['error' => 'User not found'], 404);
+            }
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
             \Log::error($e);
             return response()->json(['error' => $errorMessage], 500);
         }
     }
-    public function deleteUser(Request $request)
+    public function deleteUser($id)
     {
-        $id = $request->input('id');
-        $user = User::find($id);
-        if ($user) {
-            $user->delete();
-            return response()->json(['message' => 'User deleted successfully']);
-        } else {
-            return response()->json(['error' => 'User not found'], 404);
-        }
+        try {
+    $deletedRows = DB::table('users')->where('id', $id)->delete();
+
+    if ($deletedRows > 0) {
+        return response()->json(['message' => 'User deleted successfully']);
+    } else {
+        return response()->json(['error' => 'User not found'], 404);
+    }
+} catch (\Exception $e) {
+    $errorMessage = $e->getMessage();
+    \Log::error($e);
+    return response()->json(['error' => $errorMessage], 500);
+}
     }
 }

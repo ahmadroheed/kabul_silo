@@ -30,7 +30,7 @@
                                     <td>{{ $user->username }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>
-                                        <button data-id="{{ $user->id }}" class="btn btn-primary btn-sm btnEditUser" data-toggle="modal" data-target="#editUserModal">Edit</button>
+                                        <button data-id="{{ $user->id }}" id="btnEditUser" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editUserModal">Edit</button>
                                         <button data-id="{{ $user->id }}" class="btn btn-danger btn-sm" onclick="deleteUser({{ $user->id }})">Delete</button>
                                     </td>
                                 </tr>
@@ -97,18 +97,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Add event listener for edit buttons
-$(".btnEditUser").click(function () {
+$("#btnEditUser").click(function () {
     var userId = $(this).data('id');
-    
-    // Perform AJAX request to fetch user data
     $.ajax({
         url: "{{ route('get-user-details', ['id' => ':id']) }}".replace(':id', userId),
         type: "GET",
         success: function (userData) {
-            // Check if the response is a JSON object (assuming it is)
             if (typeof userData === 'object') {
-                // Populate the modal form fields with user data
                 $('#username').val(userData.username);
                 $('#email').val(userData.email);
                 $('#editUserModal').modal('show');

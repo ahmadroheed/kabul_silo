@@ -61,7 +61,7 @@ Route::post('/save-user', [UserController::class, 'saveUser'])->name('save-user'
 Route::get('/view-users', [UserController::class, 'viewUsers'])->name('view-users');
 Route::get('/get-user-details/{id}', [UserController::class, 'editUser'])->name('get-user-details');
 Route::put('/update-user/{id}', [UserController::class, 'updateUser'])->name('update-user');
-Route::delete('/delete-user', [UserController::class, 'deleteUser'])->name('delete-user');
+Route::delete('/delete-user/{id}', [UserController::class, 'deleteUser'])->name('delete-user');
 Route::get('/update_home', function () {
         return view('cpanel.home');
     });

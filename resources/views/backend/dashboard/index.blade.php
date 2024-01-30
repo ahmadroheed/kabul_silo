@@ -21,7 +21,16 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <div class="info-box bg-info">
+                                <span class="info-box-icon"><i class="fas fa-users"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Total Users</span>
+                                    <span class="info-box-number">{{ $totalUsers }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="info-box bg-info">
                                 <span class="info-box-icon"><i class="fas fa-newspaper"></i></span>
                                 <div class="info-box-content">
@@ -30,7 +39,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="info-box bg-success">
                                 <span class="info-box-icon"><i class="fas fa-sliders-h"></i></span>
                                 <div class="info-box-content">
@@ -39,7 +48,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="info-box bg-warning">
                                 <span class="info-box-icon"><i class="fas fa-images"></i></span>
                                 <div class="info-box-content">
@@ -72,25 +81,28 @@
                 var totalNews = {{ $totalNews }};
                 var totalSliders = {{ $totalSliders }};
                 var totalGallery = {{ $totalGallery }};
+                var totalUsers = {{ $totalUsers }};
     
                 // Create a bar chart
                 var ctx = document.getElementById('statisticsChart').getContext('2d');
                 var chart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ['News', 'Sliders', 'Gallery'],
+                        labels: ['News', 'Sliders', 'Gallery','Users'],
                         datasets: [{
                             label: 'Total Items',
-                            data: [totalNews, totalSliders, totalGallery],
+                            data: [totalNews, totalSliders, totalGallery, totalUsers],
                             backgroundColor: [
                                 'rgba(255, 99, 132, 0.6)', // News
                                 'rgba(54, 162, 235, 0.6)', // Sliders
                                 'rgba(255, 206, 86, 0.6)', // Gallery
+                                'rgba(255, 0, 0, 0.6)', // Users
                             ],
                             borderColor: [
                                 'rgba(255, 99, 132, 1)',
                                 'rgba(54, 162, 235, 1)',
                                 'rgba(255, 206, 86, 1)',
+                                'rgba(255, 255, 255, 1)',
                             ],
                             borderWidth: 1
                         }]

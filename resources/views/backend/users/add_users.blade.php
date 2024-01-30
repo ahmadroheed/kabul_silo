@@ -35,6 +35,10 @@
                             <label for="password">Password</label>
                             <input type="password" class="form-control" name="password" id="password" placeholder="Enter password" required>
                         </div>
+                        <div class="form-group">
+                            <label for="password">Confirm Password</label>
+                            <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="confirm password" required>
+                        </div>
                     </div>
                     <div class="card-footer">
                         <button type="button" id="btnSaveUser" class="btn btn-primary">Save</button>
@@ -48,8 +52,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script>
         $(document).ready(function () {
-            // AJAX request on form submission
-            $("#btnSaveUser").click(function () {
+                $("#btnSaveUser").click(function () {
+                                // AJAX request on form submission
+            var password = $('#password').val();
+            var cpassword = $('#password_confirmation').val();
+            if(password === cpassword){
                 $.ajax({
                     url: "{{ route('save-user') }}", // Use your Laravel route
                     type: "POST",
@@ -64,6 +71,10 @@
                         toastr.error(xhr.responseText);
                     }
                 });
+            }
+                else{
+                toastr.error('pasasword does not match.');
+            }
             });
         });
     </script>

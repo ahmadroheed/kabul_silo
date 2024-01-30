@@ -27,27 +27,27 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="newsTitle">Title (Dari)</label>
-                            <input type="text" class="form-control" name="dr_title" id="newsTitle" placeholder="Enter news title in Dari" required>
+                            <input type="text" class="form-control" name="newsTitleDari" id="newsTitleDari" placeholder="Enter news title in Dari" required>
                         </div>
                         <div class="form-group">
                             <label for="newsText">Text (Dari)</label>
-                            <textarea class="form-control" name="dr_text" id="newsTextDari" placeholder="Enter news text in Dari" required></textarea>
+                            <textarea class="form-control" name="newsTextDari" id="newsTextDari" placeholder="Enter news text in Dari" required></textarea>
                         </div>
                         <div class="form-group">
                             <label for="newsTitlePashto">Title (Pashto)</label>
-                            <input type="text" class="form-control" name="ps_title" id="newsTitlePashto" placeholder="Enter news title in Pashto">
+                            <input type="text" class="form-control" name="newsTitlePashto" id="newsTitlePashto" placeholder="Enter news title in Pashto">
                         </div>
                         <div class="form-group">
                             <label for="newsTextPashto">Text (Pashto)</label>
-                            <textarea class="form-control" name="ps_text" id="newsTextPashto" placeholder="Enter news text in Pashto"></textarea>
+                            <textarea class="form-control" name="newsTextPashto" id="newsTextPashto" placeholder="Enter news text in Pashto"></textarea>
                         </div>
                         <div class="form-group">
                             <label for="newsTitleEnglish">Title (English)</label>
-                            <input type="text" class="form-control" name="en_title" id="newsTitleEnglish" placeholder="Enter news title in English">
+                            <input type="text" class="form-control" name="newsTitleEnglish" id="newsTitleEnglish" placeholder="Enter news title in English">
                         </div>
                         <div class="form-group">
                             <label for="newsTextEnglish">Text (English)</label>
-                            <textarea class="form-control" name="en_text" id="newsTextEnglish" placeholder="Enter news text in English"></textarea>
+                            <textarea class="form-control" name="newsTextEnglish" id="newsTextEnglish" placeholder="Enter news text in English"></textarea>
                         </div>
                         <div class="form-group">
                             <label for="newsPhoto">Photo</label>
@@ -90,10 +90,15 @@
     $(document).ready(function () {
         // AJAX request on form submission
         $("#btnSaveNews").click(function () {
+            var formData = new FormData($("#newsForm")[0]);
+            formData.append('newsTextDari', tinymce.get('newsTextDari').getContent());
+            formData.append('newsTextPashto', tinymce.get('newsTextPashto').getContent());
+            formData.append('newsTextEnglish', tinymce.get('newsTextEnglish').getContent());
+
             $.ajax({
                 url: "{{ route('save-news') }}", // Use your Laravel route
                 type: "POST",
-                data: new FormData($("#newsForm")[0]),
+                data: formData,
                 contentType: false,
                 processData: false,
                 success: function (response) {
